@@ -53,24 +53,25 @@
 
 </style>
 <script type="text/javascript">
-$(document).ready(function(){
-    $('.datepicker').datepicker({dateFormat: 'yy-mm-dd'});
-    
-    $('.redactor').redactor({
-            minHeight: 200,
-            imageUpload: '<?php echo site_url(config_item('admin_folder').'/wysiwyg/upload_image');?>',
-            fileUpload: '<?php echo site_url(config_item('admin_folder').'/wysiwyg/upload_file');?>',
-            imageGetJson: '<?php echo site_url(config_item('admin_folder').'/wysiwyg/get_images');?>',
-            imageUploadErrorCallback: function(json)
-            {
-                alert(json.error);
-            },
-            fileUploadErrorCallback: function(json)
-            {
-                alert(json.error);
-            }
-      });
-});
+    var admin_url = '<?php echo site_url($this->config->item('admin_folder')).'/';?>';
+    $(document).ready(function(){
+        $('.datepicker').datepicker({dateFormat: 'yy-mm-dd'});
+
+        $('.redactor').redactor({
+                minHeight: 200,
+                imageUpload: '<?php echo site_url(config_item('admin_folder').'/wysiwyg/upload_image');?>',
+                fileUpload: '<?php echo site_url(config_item('admin_folder').'/wysiwyg/upload_file');?>',
+                imageGetJson: '<?php echo site_url(config_item('admin_folder').'/wysiwyg/get_images');?>',
+                imageUploadErrorCallback: function(json)
+                {
+                    alert(json.error);
+                },
+                fileUploadErrorCallback: function(json)
+                {
+                    alert(json.error);
+                }
+          });
+    });
 </script>
 <?php endif;?>
 </head>

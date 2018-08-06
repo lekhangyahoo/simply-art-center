@@ -10,7 +10,7 @@
     
     <div class="span4 offset4">
         <div style="text-align:center; margin-bottom:15px;">
-            <img src="<?php echo base_url('assets/img/logo.svg');?>"/>
+            <b>SIMPLY ART</b><!--<img src="<?php echo base_url('assets/img/logo.svg');?>"/> -->
         </div>
     
     <?php echo form_open($this->config->item('admin_folder').'/login') ?>
@@ -21,7 +21,7 @@
         <label for="password"><?php echo lang('password');?></label>
         <?php echo form_password(array('name'=>'password', 'class'=>'span4')); ?>
         
-        <label class="checkbox">
+        <label class="checkbox hide">
             <?php echo form_checkbox(array('name'=>'remember', 'value'=>'true'))?>
             <?php echo lang('stay_logged_in');?>
         </label>

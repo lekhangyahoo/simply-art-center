@@ -63,7 +63,7 @@ Class Center_model extends CI_Model
 
 	function get_course($id){
 		if($id > 0){
-			return	$this->db->where('delete_flag', 0)->where('id', $id)->get('courses')->result();
+			return	$this->db->where('delete_flag', 0)->where('id', $id)->get('courses')->row();
 		}
 		return null;
 

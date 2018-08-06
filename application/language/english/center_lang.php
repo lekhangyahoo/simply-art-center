@@ -6,6 +6,21 @@ Admin Product Language
 
 $lang['centers']					= 'Centers';
 $lang['courses']					= 'Courses';
+$lang['confirm_delete_center']      = 'Do you want to delete?';
+$lang['no_centers']                 = 'No Center';
+$lang['save']                       = 'Save';
+$lang['edit']                       = 'Edit';
+$lang['delete']                     = 'Delete';
+$lang['courses']                    = 'Courses';
+$lang['schedules']                  = 'Schedules';
+$lang['students']                   = 'Students';
+$lang['validate_add_center']        = 'Vui lòng nhập đầy đủ thông tin.';
+$lang['update_center_success']      = 'Cập nhật thành công.';
+$lang['add_center_success']         = 'Đã thêm mới.';
+$lang['error_not_found']            = 'Không tìm thấy.';
+$lang['delete_success']             = 'Đã xóa.';
+$lang['description']				= 'Description';
+$lang['content']				    = 'Content';
 
 $lang['search_term']				= 'Search Term';
 $lang['product_form']				= 'Product Form';
@@ -100,6 +115,6 @@ $lang['alert_select_product']		= 'Please select a product to add first.';
 $lang['message_saved_product']		= 'The product has been saved.';
 $lang['message_bulk_update']		= 'Your products have been updated.';
 $lang['message_deleted_product']	= 'The product has been deleted.';
-$lang['error_not_found']			= 'The requested product could not be found.';
+//$lang['error_not_found']			= 'The requested product could not be found.';
 $lang['error_bulk_no_products']		= 'There are no products selected to bulk update';
 $lang['search_returned']			= 'Your searched returned %d result(s)';

@@ -9,37 +9,54 @@ class Centers extends Admin_Controller {
 		$this->load->model(array('Center_model'));
 		$this->load->helper('form');
 		$this->lang->load('center');
-		$this->_admin = $this->CI->session->userdata('admin');
+		$this->_admin = $this->session->userdata('admin');
 	}
 
 	function index()
 	{
 		$data['page_title']	= lang('centers');
 		$data['centers']	= $this->Center_model->get_centers();
+
 		$this->view($this->config->item('admin_folder').'/centers', $data);
 	}
 
 	function insert_center()
 	{
-		$id = $this->input->post('id');
-		$data = array(
-			'name' => trim($this->input->post('name')),
-			'address' => trim($this->input->post('address')),
-			'phone' => trim($this->input->post('phone')),
-			'active' => trim($this->input->post('active'))
-		);
-		$this->Center_model->insert_center($id, $data);
+		if(trim($this->input->post('name')) != '' && trim($this->input->post('address'))) {
+			$id = $this->input->post('id');
+			$data = array(
+				'name' => trim($this->input->post('name')),
+				'address' => trim($this->input->post('address')),
+				'phone' => trim($this->input->post('phone')),
+				'active' => trim($this->input->post('active'))
+			);
+			$this->Center_model->insert_center($id, $data);
+			if($id > 0) {
+				echo json_encode(array('success' => 1, 'message' => lang('update_center_success')));
+			}else{
+				echo json_encode(array('success' => 1, 'message' => lang('add_center_success')));
+			}
+		}else{
+			echo json_encode(array('success' => 0, 'message' => lang('validate_add_center')));
+		}
 	}
 
-	function delete_center($id)
+	function delete_center()
 	{
-		$this->Center_model->delete_center($id);
+		$id = $this->input->post('id');
+		if($id > 0) {
+			$this->Center_model->delete_center($id);
+			echo json_encode(array('success' => 1, 'message' => lang('delete_success')));
+		}else{
+			echo json_encode(array('success' => 0, 'message' => lang('error_not_found')));
+		}
+
 	}
 
 	function schedules()
 	{
 		$data['page_title']	= lang('schedules');
-		$data['centers']	= $this->Center_model->get_schedules();
+		$data['schedules']	= $this->Center_model->get_schedules();
 		$this->view($this->config->item('admin_folder').'/schedules', $data);
 	}
 
@@ -175,16 +192,20 @@ class Centers extends Admin_Controller {
 	function courses()
 	{
 		$data['page_title']	= lang('courses');
-		$data['centers']	= $this->Center_model->get_courses();
+		$data['courses']	= $this->Center_model->get_courses();
 		$this->view($this->config->item('admin_folder').'/courses', $data);
 	}
 
-	function course_form($id)
+	function course_form($id = 0)
 	{
+		//pr($this->input->post(), 1);
+		$this->load->library('form_validation');
+		$data['page_title']	= lang('courses');
+		$data['id'] 			= $id;
 		$data['title'] 			= '';
 		$data['description'] 	= '';
 		$data['content'] 		= '';
-		$data['active'] 		= '';
+		$data['active'] 		= 1;
 		if($id > 0){
 			$course = $this->Center_model->get_course($id);
 			if($course){
@@ -194,15 +215,19 @@ class Centers extends Admin_Controller {
 				$data['active'] 		= $course->active;
 			}
 		}
-		$this->form_validation->set_rules('title', 'lang:course_title', 'trim');
-		$this->form_validation->set_rules('content', 'lang:course_content', 'trim');
+		$this->form_validation->set_rules('title', 'lang:course_title', 'trim|required');
+		$this->form_validation->set_rules('content', 'lang:course_content', 'trim|required');
 
 		if ($this->form_validation->run() == FALSE)
 		{
-			$this->view($this->config->item('admin_folder').'/product_form', $data);
+			if($this->input->post('submit') == 'submit'){
+				$data['title'] 			= $this->input->post('title');
+				$data['description'] 	= $this->input->post('description');
+				$data['content'] 		= $this->input->post('content');
+			}
+			$this->view($this->config->item('admin_folder').'/course_form', $data);
 		}
 		else {
-			$id 	= $this->input->post('id');
 			$data 	= array(
 				'title' 		=> trim($this->input->post('title')),
 				'description' 	=> trim($this->input->post('description')),
@@ -221,9 +246,15 @@ class Centers extends Admin_Controller {
 		//$this->Center_model->insert_course($id, $data);
 	}
 
-	function delete_course($id)
+	function delete_course()
 	{
-		$this->Center_model->delete_course($id);
+		$id = $this->input->post('id');
+		if($id > 0) {
+			$this->Center_model->delete_course($id);
+			echo json_encode(array('success' => 1, 'message' => lang('delete_success')));
+		}else{
+			echo json_encode(array('success' => 0, 'message' => lang('error_not_found')));
+		}
 	}
 
 
