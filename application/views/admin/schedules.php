@@ -16,8 +16,14 @@
 <table class="table table-striped">
     <thead>
     <tr>
-        <th>Title
-        <th></th>
+        <th>Center Name</th>
+        <th>Course Name</th>
+        <th>Name</th>
+        <th>Day</th>
+        <th>Start Time</th>
+        <th>End Time</th>
+        <th>Active</th>
+        <!--<th></th>-->
     </tr>
     </thead>
 
@@ -26,14 +32,27 @@
     <?php foreach ($schedules as $schedule): ?>
         <tr id="row-<?php echo $schedule->id;?>">
             <td class="center-name">
-                <div class="text-name text">
-                    <?php echo $schedule->name; ?>
-                </div>
-                <div class="input-name hide input">
-                    <input type="text" name="name" value="<?php echo $schedule->name; ?>">
-                </div>
+                <?php echo $schedule->center_name; ?>
             </td>
-
+            <td class="center-name">
+                <?php echo $schedule->course_title; ?>
+            </td>
+            <td class="center-name">
+                <?php echo $schedule->title; ?>
+            </td>
+            <td class="center-name">
+                <?php echo $days[$schedule->day]; ?>
+            </td>
+            <td class="center-name">
+                <?php echo $schedule->start_time; ?>
+            </td>
+            <td class="center-name">
+                <?php echo $schedule->end_time; ?>
+            </td>
+            <td class="center-name">
+                <?php if($schedule->active == 1) echo 'Enabled'; else echo 'Disabled'; ?>
+            </td>
+            <!--
             <td>
                 <div class="btn-group" style="float:right">
                     <a id="edit-center-<?php echo $schedule->id;?>" class="btn"
@@ -44,6 +63,7 @@
                             class="icon-trash icon-white"></i> <?php echo lang('delete'); ?></a>
                 </div>
             </td>
+            -->
         </tr>
     <?php endforeach;?>
     </tbody>

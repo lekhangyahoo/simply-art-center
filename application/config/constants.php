@@ -35,6 +35,9 @@ define('FOPEN_WRITE_CREATE',					'ab');
 define('FOPEN_READ_WRITE_CREATE',				'a+b');
 define('FOPEN_WRITE_CREATE_STRICT',				'xb');
 define('FOPEN_READ_WRITE_CREATE_STRICT',		'x+b');
+define('COURSE_TYPE_PAINT', 0);
+define('COURSE_TYPE_SKILL', 1);
+define('COURSE_TYPE_OTHERS', 2);
 
 
 /* End of file constants.php */

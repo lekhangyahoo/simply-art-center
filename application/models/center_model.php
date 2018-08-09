@@ -31,7 +31,17 @@ Class Center_model extends CI_Model
 
 	function get_schedules()
 	{
-		return	$this->db->where('delete_flag', 0)->order_by('id', 'DESC')->get('schedules')->result();
+		$this->db->select('schedules.*, centers.name as center_name, courses.title as course_title');
+		$this->db->join('centers', 'centers.id = schedules.center_id AND centers.delete_flag = 0');
+		$this->db->join('courses', 'courses.id = schedules.course_id AND courses.delete_flag = 0');
+		$this->db->where('schedules.delete_flag', 0);
+		$this->db->where('schedules.delete_flag', 0);
+		$this->db->where('schedules.delete_flag', 0);
+		$this->db->order_by('schedules.center_id', 'ASC');
+		$this->db->order_by('schedules.course_id', 'ASC');
+		$this->db->order_by('schedules.day', 'DESC');
+		$this->db->order_by('schedules.start_time', 'ASC');
+		return $this->db->get('schedules')->result();
 	}
 
 	function get_schedule($id){
@@ -115,6 +125,14 @@ Class Center_model extends CI_Model
 
 	function delete_student($id){
 		$this->db->where('id', $id)->update('students', array('delete_flag' => 1));
+	}
+
+	function student_registration($id){
+		//$this->db->where('id', $id)->update('students', array('delete_flag' => 1));
+	}
+
+	function student_detail($id){
+		//$this->db->where('id', $id)->update('students', array('delete_flag' => 1));
 	}
 
 	function insert_student($id = 0, $data = array()){

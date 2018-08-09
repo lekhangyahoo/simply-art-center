@@ -7,9 +7,19 @@ class Centers extends Admin_Controller {
 		parent::__construct();
 		$this->auth->check_access('Admin', true);
 		$this->load->model(array('Center_model'));
+		$this->load->library('form_validation');
 		$this->load->helper('form');
 		$this->lang->load('center');
 		$this->_admin = $this->session->userdata('admin');
+		$this->_days = array(
+			8 => 'Chủ Nhật',
+			7 => 'Thứ Bảy',
+			6 => 'Thứ Sáu',
+			5 => 'Thứ Năm',
+			4 => 'Thứ Tư',
+			3 => 'Thứ Ba',
+			2 => 'Thứ Hai'
+		);
 	}
 
 	function index()
@@ -56,7 +66,11 @@ class Centers extends Admin_Controller {
 	function schedules()
 	{
 		$data['page_title']	= lang('schedules');
+		$data['centers']	= $this->Center_model->get_centers();
+		$data['courses']	= $this->Center_model->get_courses();
 		$data['schedules']	= $this->Center_model->get_schedules();
+		$data['days']	 	= $this->_days;
+		//echo $this->db->last_query();
 		$this->view($this->config->item('admin_folder').'/schedules', $data);
 	}
 
@@ -119,17 +133,27 @@ class Centers extends Admin_Controller {
 
 	function students()
 	{
-		$data['page_title']	= lang('schedules');
-		$data['centers']	= $this->Center_model->schedules();
+		$data['page_title']	= lang('students');
+		$data['students']	= $this->Center_model->get_students();
 		$this->view($this->config->item('admin_folder').'/students', $data);
 	}
 
-	function student_form($id)
+	function student_form($id = 0)
 	{
-		$data['title'] 			= '';
-		$data['description'] 	= '';
-		$data['content'] 		= '';
-		$data['active'] 		= '';
+		$data['page_title']	= lang('students');
+		$data['id'] 		= $id;
+		$data['name'] 		= '';
+		$data['phone'] 		= '';
+		$data['email'] 		= '';
+		$data['address'] 	= '';
+		$data['district_id']= '';
+		$data['ward_id'] 	= '';
+		$data['gender'] 	= '';
+		$data['birthday'] 	= '';
+		$data['parent_name']= '';
+		$data['school_id'] 	= '';
+		$data['active'] 	= '';
+		$data['note'] 		= '';
 		if($id > 0){
 			$student = $this->Center_model->get_student($id);
 			if($student){
@@ -154,7 +178,7 @@ class Centers extends Admin_Controller {
 
 		if ($this->form_validation->run() == FALSE)
 		{
-			$this->view($this->config->item('admin_folder').'/product_form', $data);
+			$this->view($this->config->item('admin_folder').'/student_form', $data);
 		}
 		else {
 			$id 	= $this->input->post('id');
@@ -189,6 +213,15 @@ class Centers extends Admin_Controller {
 		$this->Center_model->delete_student($id);
 	}
 
+	function student_detail($id)
+	{
+		$this->Center_model->student_detail($id);
+	}
+	function student_registration($id)
+	{
+		$this->Center_model->student_registration($id);
+	}
+
 	function courses()
 	{
 		$data['page_title']	= lang('courses');
@@ -199,7 +232,6 @@ class Centers extends Admin_Controller {
 	function course_form($id = 0)
 	{
 		//pr($this->input->post(), 1);
-		$this->load->library('form_validation');
 		$data['page_title']	= lang('courses');
 		$data['id'] 			= $id;
 		$data['title'] 			= '';
@@ -308,7 +340,6 @@ class Centers extends Admin_Controller {
 	function form($id = false, $duplicate = false)
 	{
 		$this->product_id	= $id;
-		$this->load->library('form_validation');
 		$this->load->model(array('Option_model', 'Category_model', 'Digital_Product_model'));
 		$this->lang->load('digital_product');
 		$this->form_validation->set_error_delimiters('<div class="error">', '</div>');
