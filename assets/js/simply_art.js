@@ -125,7 +125,47 @@ function deleteCourse(id){
     }
 }
 
+function get_option_schedules(){
+    $("#new_regis_schedule_id option").remove();
+    var center_id = $("#new_regis_center_id").val();
+    var course_id = $("#new_regis_course_id").val();
+    if(center_id > 0 && course_id) {
+        $.ajax({
+            url: '/admin/centers/get_option_schedules',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                center_id: center_id,
+                course_id: course_id
+            }
+        }).done(function (result) {
+            $("#new_regis_schedule_id").append(result.option);
+        });
+    }
+}
+
+function get_ward_from_district(district_id){
+    $(".value-ward").remove();
+    if(district_id > 0){
+        $.ajax({
+            url: '/admin/centers/get_option_ward_from_district',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                district_id: district_id
+            }
+        }).done(function (result) {
+            $("#ward_id").append(result.option);
+        });
+    }
+}
+
+
 $( document ).ready(function() {
-
-
+    $("#new_regis_center_id, #new_regis_course_id").change(function(){
+        get_option_schedules();
+    });
+    $("#district_id").change(function(){
+        get_ward_from_district($(this).val());
+    });
 });

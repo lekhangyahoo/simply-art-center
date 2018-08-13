@@ -58,11 +58,11 @@
             <td>
                 <div class="btn-group" style="float:right">
                     <a id="edit-center-<?php echo $student->id;?>" class="btn"
-                       href="/admin/students/student_detail/<?php echo $student->id;?>"> Detail </a>
+                       href="/admin/centers/student_detail/<?php echo $student->id;?>"> Detail </a>
                     <a id="edit-center-<?php echo $student->id;?>" class="btn"
-                       href="/admin/students/student_form/<?php echo $student->id;?>">Registry</a>
+                       href="/admin/centers/student_form/<?php echo $student->id;?>">Registry</a>
                     <a id="edit-center-<?php echo $student->id;?>" class="btn"
-                       href="/admin/students/student_form/<?php echo $student->id;?>"><?php echo lang('edit'); ?></a>
+                       href="/admin/centers/student_form/<?php echo $student->id;?>"><?php echo lang('edit'); ?></a>
                     <a class="btn btn-danger"
                        href="#" onclick="deleteStudent(<?php echo $student->id;?>);return false;"><?php echo lang('delete'); ?></a>
                 </div>

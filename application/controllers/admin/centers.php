@@ -140,6 +140,10 @@ class Centers extends Admin_Controller {
 
 	function student_form($id = 0)
 	{
+		$data['districts'] = $this->db->get('districts')->result();
+		$data['centers'] = $this->Center_model->get_centers();
+		$data['courses'] = $this->Center_model->get_courses();
+		$data['course_numbers'] = $this->Center_model->get_course_numbers();
 		$data['page_title']	= lang('students');
 		$data['id'] 		= $id;
 		$data['name'] 		= '';
@@ -156,6 +160,7 @@ class Centers extends Admin_Controller {
 		$data['note'] 		= '';
 		if($id > 0){
 			$student = $this->Center_model->get_student($id);
+			//pr($student);
 			if($student){
 				$data['name'] 		= $student->name;
 				$data['phone'] 		= $student->phone;
@@ -167,9 +172,11 @@ class Centers extends Admin_Controller {
 				$data['gender'] 	= $student->gender;
 				$data['birthday'] 	= $student->birthday;
 				$data['parent_name']= $student->parent_name;
-				$data['school_id'] 	= $student->school_id;
 				$data['active'] 	= $student->active;
 				$data['note'] 		= $student->note;
+				if($data['district_id'] > 0){
+					$data['wards'] = $this->db->where('district_id', $data['district_id'])->get('wards')->result();
+				}
 			}
 		}
 		$this->form_validation->set_rules('name', 'Name', 'trim');
@@ -289,6 +296,28 @@ class Centers extends Admin_Controller {
 		}
 	}
 
+	function get_option_schedules(){
+		$center_id = $this->input->post('center_id');
+		$course_id = $this->input->post('course_id');
+		$schedules = $this->Center_model->get_schedules(array('center_id' => $center_id, 'course_id' => $course_id));
+		$option = '';
+		foreach($schedules as $schedule){
+			$option = $option . '<option value="' . $schedule->id .'">' . $schedule->title. '</option>';
+		}
+		echo json_encode(array('option' => $option));
+		exit;
+	}
+
+	function get_option_ward_from_district(){
+		$district_id = $this->input->post('district_id');
+		$wards = $this->db->where('district_id', $district_id)->get('wards')->result();
+		$option = '';
+		foreach($wards as $ward){
+			$option = $option . '<option class="value-ward" value="' . $ward->id .'">' . $ward->name. '</option>';
+		}
+		echo json_encode(array('option' => $option));
+		exit;
+	}
 
 
 

@@ -4,7 +4,7 @@ Class Center_model extends CI_Model
 	
 	function get_centers()
 	{
-		return	$this->db->where('delete_flag', 0)->order_by('id', 'DESC')->get('centers')->result();
+		return	$this->db->where('delete_flag', 0)->order_by('id', 'ASC')->get('centers')->result();
 	}
 
 	function get_center($id){
@@ -29,8 +29,14 @@ Class Center_model extends CI_Model
 		return $id;
 	}
 
-	function get_schedules()
+	function get_schedules($conditions = array())
 	{
+		if(isset($conditions['center_id']) && $conditions['center_id'] > 0){
+			$this->db->where('schedules.center_id', $conditions['center_id']);
+		}
+		if(isset($conditions['course_id']) && $conditions['course_id'] > 0){
+			$this->db->where('schedules.course_id', $conditions['course_id']);
+		}
 		$this->db->select('schedules.*, centers.name as center_name, courses.title as course_title');
 		$this->db->join('centers', 'centers.id = schedules.center_id AND centers.delete_flag = 0');
 		$this->db->join('courses', 'courses.id = schedules.course_id AND courses.delete_flag = 0');
@@ -68,7 +74,7 @@ Class Center_model extends CI_Model
 
 	function get_courses()
 	{
-		return	$this->db->where('delete_flag', 0)->order_by('id', 'DESC')->get('courses')->result();
+		return	$this->db->where('delete_flag', 0)->order_by('id', 'ASC')->get('courses')->result();
 	}
 
 	function get_course($id){
@@ -110,7 +116,10 @@ Class Center_model extends CI_Model
 
 	function get_student($id){
 		if($id > 0){
-			return	$this->db->where('delete_flag', 0)->where('id', $id)->get('students')->result();
+			$this->db->select('students.*, districts.name as district_name, wards.name as ward_name');
+			$this->db->join('districts', 'districts.id = students.district_id', 'left');
+			$this->db->join('wards', 'wards.id = students.ward_id', 'left');
+			return	$this->db->where('delete_flag', 0)->where('students.id', $id)->get('students')->row();
 		}
 		return null;
 	}
@@ -158,6 +167,14 @@ Class Center_model extends CI_Model
 		if(!empty($course_ids)){
 			$this->db->where('delete_flag', 0)->count_all_results('students');
 		}
+	}
+
+	function get_course_numbers($all = false)
+	{
+		if($all == false){
+			$this->db->where('end_date > ' . date('Y-m-d'));
+		}
+		return	$this->db->where('delete_flag', 0)->order_by('id', 'DESC')->get('course_numbers')->result();
 	}
 
 	function print_invoice($student_id, $course_id){
