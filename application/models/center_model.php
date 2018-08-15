@@ -99,7 +99,7 @@ Class Center_model extends CI_Model
 		return $id;
 	}
 
-	function get_students($data=array())
+	function get_students($data=array(), $condition = array())
 	{
 		if(!empty($data['rows']))
 		{
@@ -110,6 +110,12 @@ Class Center_model extends CI_Model
 		if(!empty($data['page']))
 		{
 			$this->db->offset($data['page']);
+		}
+		if(isset($condition['key_word'])){
+			$this->db->where('(name like "%'.$condition['key_word'].'%")');
+		}
+		if(isset($condition['key_word_birthday'])){
+			$this->db->where('(birthday like "%'.$condition['key_word_birthday'].'%")');
 		}
 		return	$this->db->where('delete_flag', 0)->order_by('id', 'DESC')->get('students')->result();
 	}
@@ -167,6 +173,18 @@ Class Center_model extends CI_Model
 		if(!empty($course_ids)){
 			$this->db->where('delete_flag', 0)->count_all_results('students');
 		}
+	}
+
+	function get_student_registered($id){
+		if($id > 0){
+			$this->db->select('student_registry.*, centers.name as center_name, courses.title as course_title, schedules.title as schedule_title, course_numbers.title as course_number_title');
+			$this->db->join('centers', 'centers.id = student_registry.center_id', 'left');
+			$this->db->join('courses', 'courses.id = student_registry.course_id', 'left');
+			$this->db->join('schedules', 'schedules.id = student_registry.schedule_id', 'left');
+			$this->db->join('course_numbers', 'course_numbers.id = student_registry.course_number_id', 'left');
+			return $this->db->where('student_registry.delete_flag', 0)->where('student_registry.student_id', $id)->get('student_registry')->result();
+		}
+		return null;
 	}
 
 	function get_course_numbers($all = false)

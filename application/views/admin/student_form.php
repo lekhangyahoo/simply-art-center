@@ -1,4 +1,4 @@
-<style>
+<style xmlns="http://www.w3.org/1999/html">
     .new-registration select {
         width: 100%
     }
@@ -17,10 +17,9 @@
     </div>
 </div>
 
-
 <div class="row">
     <div class="span6">
-        <?php echo form_open($this->config->item('admin_folder') . '/centers/course_form/' . $id); ?>
+        <?php echo form_open($this->config->item('admin_folder') . '/centers/student_form/' . $id); ?>
         <fieldset>
             <legend>Information</legend>
             <label for="title">Full Name</label>
@@ -30,9 +29,16 @@
             ?>
             <br/>
 
+            <label for="title">Gender</label>
+            <select name="gender">
+                <option value="1" <?php if ($gender == 1) echo 'selected'; ?>>Female</option>
+                <option value="0" <?php if ($gender == 0) echo 'selected'; ?>>Male</option>
+            </select>
+            <br/>
+
             <label for="content">Birthday</label>
             <?php
-            $data = array('name' => 'birthday', 'value' => set_value('birthday    ', @$birthday), 'class' => 'span6', 'required' => 'required');
+            $data = array('name' => 'birthday', 'value' => set_value('birthday    ', @$birthday), 'class' => 'span6', 'required' => 'required', 'placeholder' => '2010-12-31');
             echo form_input($data);
             ?>
             <br/>
@@ -53,7 +59,7 @@
 
             <label for="content">Email</label>
             <?php
-            $data = array('name' => 'email', 'value' => set_value('email', @$email), 'class' => 'span6', 'required' => 'required');
+            $data = array('name' => 'email', 'value' => set_value('email', @$email), 'class' => 'span6');
             echo form_input($data);
             ?>
             <br/>
@@ -69,14 +75,12 @@
                     <option value="<?php echo $district->id; ?>" <?php if($district->id == $district_id) echo 'selected';?>><?php echo $district->name; ?></option>
                 <?php } ?>
             </select>
-            <?php if(isset($wards) && !empty($districts)){?>
-                <select id="ward_id" name="center_id" class="span3">
-                    <option value="">-- Select Ward --</option>
-                    <?php foreach ($wards as $ward) {?>
-                        <option class="value-ward" value="<?php echo $ward->id; ?>" <?php if($ward->id == $ward_id) echo 'selected';?>><?php echo $ward->name; ?></option>
-                    <?php }?>
-                </select>
-            <?php }?>
+            <select id="ward_id" name="center_id" class="span3">
+                <option value="">-- Select Ward --</option>
+                <?php foreach ($wards as $ward) {?>
+                    <option class="value-ward" value="<?php echo $ward->id; ?>" <?php if($ward->id == $ward_id) echo 'selected';?>><?php echo $ward->name; ?></option>
+                <?php }?>
+            </select>
             <br/>
 
             <label for="content">Note</label>
@@ -92,11 +96,18 @@
                 <option value="0" <?php if ($active == 0) echo 'selected'; ?>>Disabled</option>
             </select>
         </fieldset>
+        <div class="row">
+            <div class="span6">
+                <button name="submit" value="save" type="submit" class="btn btn-primary"><?php echo lang('save'); ?></button>
+                <button name="submit" value="save-continue" type="submit" class="btn btn-primary">Save & Continue</button>
+            </div>
+        </div>
         </form>
 
     </div>
     <?php if($id > 0){?>
     <div class="span6">
+        <?php echo form_open($this->config->item('admin_folder') . '/centers/student_form/' . $id); ?>
         <fieldset>
             <legend>New Registration</legend>
             <div class="row new-registration">
@@ -135,24 +146,44 @@
                 </div>
             </div>
             <br/>
-
+            <div class="row">
+                <div class="span6">
+                    <button name="submit" value="save-regis" type="submit" class="btn btn-primary"><?php echo lang('save'); ?></button>
+                    <button name="submit" value="save-regis-continue" type="submit" class="btn btn-primary">Save & Continue</button>
+                </div>
+            </div>
+            <br/>
         </fieldset>
+        </form>
 
         <fieldset>
             <legend>Registered</legend>
-            <label for="title">Full Name</label>
-            <?php
-            $data = array('name' => 'title', 'value' => set_value('title', @$title), 'class' => 'span6');
-            echo form_input($data);
-            ?>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Center</th>
+                    <th>Course</th>
+                    <th>Course Number</th>
+                    <th>Schedule</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach($student_registered as $registered){?>
+                    <tr>
+                        <td><?php echo $registered->center_name;?></td>
+                        <td><?php echo $registered->course_title;?></td>
+                        <td><?php echo $registered->course_number_title;?></td>
+                        <td><?php echo $registered->schedule_title;?></td>
+                        <td></td>
+                    </tr>
+                <?php }?>
+                </tbody>
+            </table>
             <br/>
         </fieldset>
     </div>
     <?php }?>
 
 </div>
-<div class="row">
-    <div class="span5">
-        <button name="submit" value="submit" type="submit" class="btn btn-primary"><?php echo lang('save'); ?></button>
-    </div>
-</div>
+

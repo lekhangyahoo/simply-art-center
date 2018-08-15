@@ -113,7 +113,7 @@ class Centers extends Admin_Controller {
 				'active' 		=> $this->input->post('active'),
 				'center_id' 	=> $this->input->post('center_id'),
 				'course_id' 	=> $this->input->post('course_id'),
-				'user_id'		=> $this->_admin->id
+				'user_id'		=> $this->_admin['id']
 			);
 			if($id > 0){
 				$data['update_date'] = date('Y-m-d H:i:s');
@@ -134,12 +134,29 @@ class Centers extends Admin_Controller {
 	function students()
 	{
 		$data['page_title']	= lang('students');
-		$data['students']	= $this->Center_model->get_students();
+		$conditions = array();
+		$post = $this->input->post();
+		if(isset($post['search'])) {
+			if(isset($post['key_word']) && trim($post['key_word']) != '') {
+				$conditions['key_word'] = trim($post['key_word']);
+				$data['key_word'] = trim($post['key_word']);
+			}
+			if(isset($post['key_word_birthday']) && trim($post['key_word_birthday']) != '') {
+				$conditions['key_word_birthday'] = trim($post['key_word_birthday']);
+				$data['key_word_birthday'] = trim($post['key_word_birthday']);
+			}
+		}
+
+		$data['students']	= $this->Center_model->get_students(null, $conditions);
 		$this->view($this->config->item('admin_folder').'/students', $data);
 	}
 
 	function student_form($id = 0)
 	{
+		//pr($this->input->post());exit;
+		$post = $this->input->post();
+		$data['message_error'] = '';
+		$data['message_success'] = '';
 		$data['districts'] = $this->db->get('districts')->result();
 		$data['centers'] = $this->Center_model->get_centers();
 		$data['courses'] = $this->Center_model->get_courses();
@@ -152,7 +169,7 @@ class Centers extends Admin_Controller {
 		$data['address'] 	= '';
 		$data['district_id']= '';
 		$data['ward_id'] 	= '';
-		$data['gender'] 	= '';
+		$data['gender'] 	= 1;
 		$data['birthday'] 	= '';
 		$data['parent_name']= '';
 		$data['school_id'] 	= '';
@@ -160,6 +177,8 @@ class Centers extends Admin_Controller {
 		$data['note'] 		= '';
 		if($id > 0){
 			$student = $this->Center_model->get_student($id);
+			$data['student_registered'] = $this->Center_model->get_student_registered($id);
+			//echo $this->db->last_query();pr($data['student_registry']);exit;
 			//pr($student);
 			if($student){
 				$data['name'] 		= $student->name;
@@ -179,39 +198,71 @@ class Centers extends Admin_Controller {
 				}
 			}
 		}
-		$this->form_validation->set_rules('name', 'Name', 'trim');
-		$this->form_validation->set_rules('phone', 'Phone', 'trim');
-		$this->form_validation->set_rules('content', 'lang:course_content', 'trim');
 
-		if ($this->form_validation->run() == FALSE)
+		if (!isset($post['submit']))
 		{
 			$this->view($this->config->item('admin_folder').'/student_form', $data);
 		}
 		else {
-			$id 	= $this->input->post('id');
-			$data 	= array(
-				'name' 			=> trim($this->input->post('name')),
-				'phone' 		=> trim($this->input->post('phone')),
-				'phone_2' 		=> trim($this->input->post('phone_2')),
-				'email' 		=> trim($this->input->post('email')),
-				'address' 		=> trim($this->input->post('address')),
-				'district_id' 	=> $this->input->post('district_id'),
-				'ward_id' 		=> $this->input->post('ward_id'),
-				'gender' 		=> trim($this->input->post('gender')),
-				'birthday' 		=> trim($this->input->post('birthday')),
-				'parent_name' 	=> trim($this->input->post('parent_name')),
-				'school_id' 	=> $this->input->post('school_id'),
-				'active' 		=> $this->input->post('active'),
-				'note' 			=> trim($this->input->post('note')),
-				'user_id'		=> $this->_admin->id
-			);
-			if($id > 0){
-				$data['update_date'] = date('Y-m-d H:i:s');
-			}else{
-				$data['create_date'] = date('Y-m-d H:i:s');
+			if($post['submit'] == 'save-regis-continue' || $post['submit'] == 'save-regis'){
+				$course_id = $this->input->post('course_id');
+				$schedule_id = $this->input->post('schedule_id');
+				$course_number_id = $this->input->post('course_number_id');
+				$this->db->where('student_id', $id)->where('course_id', $course_id)->where('schedule_id', $schedule_id);
+				$check_student_registry = $this->db->get('student_registry')->row();
+				if($check_student_registry){
+					$data['message_error'] = 'This student was registered this course.';
+				}else {
+					$course = $this->Center_model->get_course($schedule_id);
+					$data = array(
+						'student_id' => $id,
+						'center_id' => $this->input->post('center_id'),
+						'course_id' => $schedule_id,
+						'course_number_id' => $course_number_id,
+						'schedule_id' => $schedule_id,
+						'price' => isset($course->price) ? $course->price : null,
+						'price_sale' => isset($course->price_sale) ? $course->price_sale : null,
+						'create_date' => date('Y-m-d H:i:s'),
+						'user_id' => $this->_admin['id']
+					);
+					$this->db->insert('student_registry', $data);
+				}
+			}else {
+				$this->form_validation->set_rules('name', 'Name', 'trim');
+				$this->form_validation->set_rules('phone', 'Phone', 'trim');
+				$this->form_validation->set_rules('content', 'lang:course_content', 'trim');
+				if ($this->form_validation->run() == FALSE){
+					$this->view($this->config->item('admin_folder').'/student_form', $data);
+				}else {
+					$data = array(
+						'name' => trim($this->input->post('name')),
+						'phone' => trim($this->input->post('phone')),
+						'phone_2' => trim($this->input->post('phone_2')),
+						'email' => trim($this->input->post('email')),
+						'address' => trim($this->input->post('address')),
+						'district_id' => $this->input->post('district_id'),
+						'ward_id' => $this->input->post('ward_id'),
+						'gender' => $this->input->post('gender'),
+						'birthday' => $this->input->post('birthday'),
+						'parent_name' => trim($this->input->post('parent_name')),
+						'school_id' => $this->input->post('school_id'),
+						'active' => $this->input->post('active'),
+						'note' => trim($this->input->post('note')),
+						'user_id' => $this->_admin['id']
+					);
+					if ($id > 0) {
+						$data['update_date'] = date('Y-m-d H:i:s');
+					} else {
+						$data['create_date'] = date('Y-m-d H:i:s');
+					}
+					$id = $this->Center_model->insert_student($id, $data);
+				}
 			}
-			$this->Center_model->insert_student($id, $data);
-			redirect('/admin/centers/students');
+			if($post['submit'] == 'save-regis-continue' || $post['submit'] == 'save-continue'){
+				redirect('/admin/centers/student_form/' . $id);
+			}else {
+				redirect('/admin/centers/students');
+			}
 		}
 	}
 
@@ -272,7 +323,7 @@ class Centers extends Admin_Controller {
 				'description' 	=> trim($this->input->post('description')),
 				'content' 		=> trim($this->input->post('content')),
 				'active' 		=> $this->input->post('active'),
-				'user_id'		=> $this->_admin->id
+				'user_id'		=> $this->_admin['id']
 			);
 			if($id > 0){
 				$data['update_date'] = date('Y-m-d H:i:s');
@@ -300,8 +351,9 @@ class Centers extends Admin_Controller {
 		$center_id = $this->input->post('center_id');
 		$course_id = $this->input->post('course_id');
 		$schedules = $this->Center_model->get_schedules(array('center_id' => $center_id, 'course_id' => $course_id));
-		$option = '';
+		$option = '<option value>-- Select Schedule --</option>';
 		foreach($schedules as $schedule){
+			$schedule->title = $schedule->title . ' (' . $schedule->start_time . ' - '. $schedule->end_time . ')';
 			$option = $option . '<option value="' . $schedule->id .'">' . $schedule->title. '</option>';
 		}
 		echo json_encode(array('option' => $option));

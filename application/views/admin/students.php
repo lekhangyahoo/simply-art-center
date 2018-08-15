@@ -9,6 +9,20 @@
     <a class="btn" href="<?php echo site_url($this->config->item('admin_folder') . '/centers/student_form'); ?>"><i class="icon-plus-sign"></i> Add New Student</a>
 </div>
 
+<div class="row">
+    <form action="/admin/centers/students" method="post" accept-charset="utf-8">
+        <div class="span2">
+            <input type="text" name="key_word" value="<?php if(isset($key_word)) echo $key_word;?>" class="span2" required="required" placeholder="Key Word Name" minlength=2 autocomplete="off">
+        </div>
+        <div class="span2">
+            <input type="text" name="key_word_birthday" value="<?php if(isset($key_word_birthday)) echo $key_word_birthday;?>" class="span2" placeholder="Key Word Birthday" autocomplete="off">
+        </div>
+        <div class="span1">
+            <button name="search" value="search" type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+</div>
+
 <table class="table table-striped" width="100%">
     <thead>
     <tr width="100%">
@@ -60,7 +74,7 @@
                     <a id="edit-center-<?php echo $student->id;?>" class="btn"
                        href="/admin/centers/student_detail/<?php echo $student->id;?>"> Detail </a>
                     <a id="edit-center-<?php echo $student->id;?>" class="btn"
-                       href="/admin/centers/student_form/<?php echo $student->id;?>">Registry</a>
+                       href="/admin/centers/student_form/<?php echo $student->id;?>">Registered</a>
                     <a id="edit-center-<?php echo $student->id;?>" class="btn"
                        href="/admin/centers/student_form/<?php echo $student->id;?>"><?php echo lang('edit'); ?></a>
                     <a class="btn btn-danger"
