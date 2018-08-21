@@ -74,7 +74,7 @@
                     <a id="edit-center-<?php echo $student->id;?>" class="btn"
                        href="/admin/centers/student_detail/<?php echo $student->id;?>"> Detail </a>
                     <a id="edit-center-<?php echo $student->id;?>" class="btn"
-                       href="/admin/centers/student_form/<?php echo $student->id;?>">Registered</a>
+                       href="/admin/centers/student_invoice/<?php echo $student->id;?>">Invoice</a>
                     <a id="edit-center-<?php echo $student->id;?>" class="btn"
                        href="/admin/centers/student_form/<?php echo $student->id;?>"><?php echo lang('edit'); ?></a>
                     <a class="btn btn-danger"

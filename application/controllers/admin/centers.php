@@ -9,6 +9,7 @@ class Centers extends Admin_Controller {
 		$this->load->model(array('Center_model'));
 		$this->load->library('form_validation');
 		$this->load->helper('form');
+		$this->load->helper('formatting');
 		$this->lang->load('center');
 		$this->_admin = $this->session->userdata('admin');
 		$this->_days = array(
@@ -266,6 +267,86 @@ class Centers extends Admin_Controller {
 		}
 	}
 
+	function student_invoice($id = 0)
+	{
+		$data['page_title']	= lang('students');
+		$post = $this->input->post();
+		//pr($this->input->post());exit;
+		$data['id'] = $id;
+		if($id > 0){
+			$student = $this->Center_model->get_student($id);
+			$data['student'] = $student;
+			if($student) {
+				if (!isset($post['submit'])){
+					$data['student_registered'] = $this->Center_model->get_student_registered($id, null, true);
+					$this->view($this->config->item('admin_folder').'/student_invoice', $data);
+				}else{
+					$data['student_registered'] = $this->Center_model->get_student_registered($id, $post['id']);
+					$this->view($this->config->item('admin_folder').'/student_create_invoice', $data);
+				}
+			}else{
+				redirect('/admin/centers/students');
+			}
+			//echo $this->db->last_query();pr($data['student_registry']);exit;
+		}else{
+			redirect('/admin/centers/students');
+		}
+	}
+
+	function student_create_invoice()
+	{
+		$post = $this->input->post();
+		//pr($this->input->post());exit;
+		$data['student_id'] = $post['student_id'];
+		$data['id'] = $post['id'];
+		if($data['student_id'] > 0 && !empty($data['id'])){
+			$student = $this->Center_model->get_student($data['student_id']);
+			$student_registered = $this->Center_model->get_student_registered($data['student_id'], $post['id']);
+			if(count($student_registered) == count($data['id'])){
+				$total_price = 0;
+				foreach($student_registered as $registered){
+					if($registered->price_sale > 0 && $registered->price_sale < $registered->price){
+						$price = $registered->price_sale;
+						$flag_sale_off = true;
+					}else{
+						$price = $registered->price;
+					}
+					$total_price = $total_price + $price;
+				}
+				if($total_price > 0){
+					$invoice = $this->db->order_by('invoice_number', 'DESC')->get('invoices')->row();
+					if($invoice){
+						$invoice_number = $invoice->invoice_number + 1;
+					}else{
+						$invoice_number = 180001;
+					}
+					$this->db->insert('invoices', array(
+						'invoice_number' => $invoice_number,
+						'total' => $total_price,
+						'create_date' => date('Y-m-d H:i:s'),
+						'user_id' => $this->_admin['id']
+					));
+					$invoice_id = $this->db->insert_id();
+					foreach($student_registered as $registered){
+						$this->db->insert('invoice_registries', array(
+							'invoice_id' 			=> $invoice_id,
+							'student_registry_id' 	=> $registered->id
+						));
+					}
+					$this->db->where_in('id', $data['id'])->update('student_registry', array(
+						'invoice_status' => 1
+					));
+				}
+				echo json_encode(array('success' => 1));
+			}else{
+				echo json_encode(array('success' => 0));
+			}
+		}else{
+			echo json_encode(array('success' => 0));
+		}
+		exit;
+	}
+
 	function delete_student($id)
 	{
 		$this->Center_model->delete_student($id);
@@ -370,6 +451,29 @@ class Centers extends Admin_Controller {
 		echo json_encode(array('option' => $option));
 		exit;
 	}
+
+	function print_invoice($invoice_number = 0)
+	{
+		$this->load->helper('html2pdf');
+
+		$data['invoice_number'] = $invoice_number;
+		if($invoice_number > 0){
+			$detail_invoice = $this->Center_model->detail_invoice($invoice_number);
+			$data['detail_invoice'] = $detail_invoice;
+			//pr($detail_invoice);exit;
+			if($detail_invoice) {
+				$html = $this->load->view($this->config->item('admin_folder').'/template_invoice', $data, true);
+				echo $html;exit;
+				return html2pdf($html, 'invoice_'.$invoice_number, true, 'A4');
+			}else{
+				redirect('/admin/centers/students');
+			}
+			//echo $this->db->last_query();pr($data['student_registry']);exit;
+		}else{
+			redirect('/admin/centers/students');
+		}
+	}
+
 
 
 

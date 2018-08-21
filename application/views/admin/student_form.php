@@ -157,7 +157,7 @@
         </form>
 
         <fieldset>
-            <legend>Registered</legend>
+            <legend><a href="/admin/centers/student_invoice/<?php echo $id;?>">Registered</a></legend>
             <table class="table table-striped">
                 <thead>
                 <tr>
@@ -165,7 +165,7 @@
                     <th>Course</th>
                     <th>Course Number</th>
                     <th>Schedule</th>
-                    <th>Status</th>
+                    <th>Invoiced</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -175,7 +175,7 @@
                         <td><?php echo $registered->course_title;?></td>
                         <td><?php echo $registered->course_number_title;?></td>
                         <td><?php echo $registered->schedule_title;?></td>
-                        <td></td>
+                        <td><?php echo ($registered->invoice_status) ? 'Yes' : 'No';?></td>
                     </tr>
                 <?php }?>
                 </tbody>

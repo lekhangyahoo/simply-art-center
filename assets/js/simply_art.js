@@ -160,6 +160,21 @@ function get_ward_from_district(district_id){
     }
 }
 
+function studentCreateInvoice(type){
+    $.ajax({
+        url: '/admin/centers/student_create_invoice',
+        type: 'POST',
+        dataType: 'json',
+        data: $("#from-create-invoice").serialize()
+    }).done(function (result) {
+        if(result.success == 1){
+
+        }else{
+
+        }
+    });
+    return false;
+}
 
 $( document ).ready(function() {
     $("#new_regis_center_id, #new_regis_course_id").change(function(){

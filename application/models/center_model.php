@@ -175,16 +175,40 @@ Class Center_model extends CI_Model
 		}
 	}
 
-	function get_student_registered($id){
+	function get_student_registered($id, $student_registry_id_list = array(), $get_invoice_number = false){
 		if($id > 0){
-			$this->db->select('student_registry.*, centers.name as center_name, courses.title as course_title, schedules.title as schedule_title, course_numbers.title as course_number_title');
+			if(!empty($student_registry_id_list)){
+				$this->db->where_in('student_registry.id', $student_registry_id_list);
+				$this->db->where('student_registry.invoice_status', 0);
+			}
+			if($get_invoice_number){
+				$this->db->select('invoices.invoice_number');
+				$this->db->join('invoice_registries', 'invoice_registries.student_registry_id = student_registry.id', 'left');
+				$this->db->join('invoices', 'invoices.id = invoice_registries.invoice_id', 'left');
+			}
+			$this->db->select('student_registry.*, centers.name as center_name, courses.title as course_title, schedules.title as schedule_title, course_numbers.title as course_number_title, schedules.start_time, schedules.end_time');
 			$this->db->join('centers', 'centers.id = student_registry.center_id', 'left');
 			$this->db->join('courses', 'courses.id = student_registry.course_id', 'left');
 			$this->db->join('schedules', 'schedules.id = student_registry.schedule_id', 'left');
 			$this->db->join('course_numbers', 'course_numbers.id = student_registry.course_number_id', 'left');
-			return $this->db->where('student_registry.delete_flag', 0)->where('student_registry.student_id', $id)->get('student_registry')->result();
+			return $this->db->where('student_registry.delete_flag', 0)->where('student_registry.student_id', $id)->order_by('student_registry.id', 'DESC')->get('student_registry')->result();
 		}
 		return null;
+	}
+
+	function detail_invoice($invoice_number){
+		$this->db->select('invoices.id as invoice_id, invoices.invoice_number, invoices.total as invoice_total, invoices.create_date as invoice_create_date');
+		$this->db->select('student_registry.*, centers.name as center_name, courses.title as course_title, schedules.title as schedule_title, course_numbers.title as course_number_title, schedules.start_time, schedules.end_time');
+
+		$this->db->join('invoice_registries', 'invoice_registries.invoice_id = invoices.id');
+		$this->db->join('student_registry', 'student_registry.id = invoice_registries.student_registry_id');
+		$this->db->join('centers', 'centers.id = student_registry.center_id', 'left');
+		$this->db->join('courses', 'courses.id = student_registry.course_id', 'left');
+		$this->db->join('schedules', 'schedules.id = student_registry.schedule_id', 'left');
+		$this->db->join('course_numbers', 'course_numbers.id = student_registry.course_number_id', 'left');
+		$this->db->where('student_registry.delete_flag', 0);
+		$this->db->where('invoices.invoice_number', $invoice_number);
+		return $this->db->order_by('student_registry.id', 'DESC')->get('invoices ')->result();
 	}
 
 	function get_course_numbers($all = false)
