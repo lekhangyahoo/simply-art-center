@@ -32,7 +32,29 @@ class Cart extends Front_Controller {
 		
 		$this->view('page', $data);
 	}
-	
+
+	function news($id = false)
+	{
+		//if there is no page id provided redirect to the homepage.
+		$data['news']	= $this->News_model->get_news_detail($id);
+		if(!$data['news'])
+		{
+			show_404();
+		}
+		$this->load->model('News_model');
+		$data['base_url']			= $this->uri->segment_array();
+
+		$data['fb_like']			= true;
+
+		$data['page_title']			= $data['news']->title;
+
+		$data['meta']				= $data['news']->meta;
+		$data['seo_title']			= (!empty($data['news']->seo_title))?$data['news']->seo_title:$data['news']->title;
+
+		$data['gift_cards_enabled'] = $this->gift_cards_enabled;
+
+		$this->view('news_detail', $data);
+	}
 	
 	function search($code=false, $page = 0)
 	{

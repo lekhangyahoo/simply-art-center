@@ -10,7 +10,7 @@
             class=" icon-th-list"></i> <?php echo lang('courses'); ?></a>
 </div>
 
-<?php echo form_open($this->config->item('admin_folder') . '/centers/course_form/' . $id); ?>
+<?php echo form_open($this->config->item('admin_folder') . '/centers/course_form/' . $id, 'enctype="multipart/form-data"'); ?>
     <div class="tabbable">
 
         <div>
@@ -22,7 +22,7 @@
                 ?>
                 <br/>
 
-                <label for="content"><?php echo @lang('description'); ?></label>
+                <label for="description"><?php echo @lang('description'); ?></label>
                 <?php
                 $data = array('name' => 'description', 'class' => 'redactor', 'value' => set_value('description', @$description));
                 echo form_textarea($data);
@@ -36,6 +36,30 @@
                 ?>
                 <br/>
 
+                <label for="content">Price</label>
+                <?php
+                $data = array('name' => 'price', 'value' => set_value('price', @$price), 'class' => 'span3', 'required' => 'required');
+                echo form_input($data);
+                ?>
+                <br/>
+
+                <label for="content">Price Sale</label>
+                <?php
+                $data = array('name' => 'price_sale', 'value' => set_value('price_sale', @$price_sale), 'class' => 'span3');
+                echo form_input($data);
+                ?>
+                <br/>
+
+                <?php
+                    $config_image = config_item('image');
+                    $config_type = $config_image['courses'];
+                ?>
+                <label for="content">Image</label>
+                <input type="file" name="userfile" value="" id="userfile" class="input-file">
+                <?php if(isset($image) && $image != ''){?>
+                    <img height="50px" src="/<?php echo $config_type['path_medium'].'/' . $image;?>">
+                <?php }?>
+                <br/>
                 <label for="content">Active</label>
                 <select name="active">
                     <option value="1" <?php if ($active == 1) echo 'selected';?>>Enabled</option>

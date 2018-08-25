@@ -67,7 +67,7 @@
                         <td>
                             <?php
                                 if($registered->invoice_status){?>
-                                    <a href="/admin/centers/print_invoice/<?php echo $registered->invoice_number;?>"> <?php echo $registered->invoice_number;?> </a>
+                                    <a target="_blank" href="/admin/centers/print_invoice/<?php echo $registered->invoice_number;?>"> <?php echo $registered->invoice_number;?> </a>
                                 <?php }else{
                                     echo 'No';
                                 }

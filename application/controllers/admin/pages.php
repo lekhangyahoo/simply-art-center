@@ -9,6 +9,8 @@ class Pages extends Admin_Controller
 		$this->auth->check_access('Admin', true);
 		$this->load->model('Page_model');
 		$this->lang->load('page');
+		$this->load->helper('upload_image');
+		$this->website = config_item('website');
 	}
 		
 	function index()
@@ -37,8 +39,11 @@ class Pages extends Admin_Controller
 		$data['sequence']	= 0;
 		$data['parent_id']	= 0;
 		$data['content']	= '';
+		$data['description']= '';
 		$data['seo_title']	= '';
 		$data['meta']		= '';
+		$data['image'] 		= null;
+		$data['meta_keyword'] = '';
 		
 		$data['page_title']	= lang('page_form');
 		$data['pages']		= $this->Page_model->get_pages();
@@ -63,9 +68,12 @@ class Pages extends Admin_Controller
 			$data['menu_title']		= $page->menu_title;
 			$data['sequence']		= $page->sequence;
 			$data['content']		= $page->content;
+			$data['description']	= $page->description;
 			$data['seo_title']		= $page->seo_title;
 			$data['meta']			= $page->meta;
 			$data['slug']			= $page->slug;
+			$data['image'] 			= $page->image;
+			$data['meta_keyword'] 	= $page->meta_keyword;
 		}
 		
 		$this->form_validation->set_rules('title', 'lang:title', 'trim|required');
@@ -119,17 +127,22 @@ class Pages extends Admin_Controller
 			$save['menu_title']	= $this->input->post('menu_title'); 
 			$save['sequence']	= $this->input->post('sequence');
 			$save['content']	= $this->input->post('content');
+			$save['description']= $this->input->post('description');
 			$save['seo_title']	= $this->input->post('seo_title');
 			$save['meta']		= $this->input->post('meta');
 			$save['route_id']	= $route_id;
 			$save['slug']		= $slug;
+			$save['meta_keyword'] = $this->input->post('meta_keyword');
 			
 			//set the menu title to the page title if if is empty
 			if ($save['menu_title'] == '')
 			{
 				$save['menu_title']	= $this->input->post('title');
 			}
-			
+			$image_upload = do_upload_image('pages');
+			if(isset($image_upload['success'])){
+				$save['image'] = $image_upload['success'];
+			}
 			//save the page
 			$page_id	= $this->Page_model->save($save);
 			

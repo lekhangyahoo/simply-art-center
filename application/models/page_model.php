@@ -1,6 +1,11 @@
 <?php
 Class Page_model extends CI_Model
 {
+	function __construct()
+	{
+		parent::__construct();
+		$this->website = config_item('website');
+	}
 
 	/********************************************************************
 	Page functions
@@ -9,6 +14,7 @@ Class Page_model extends CI_Model
 	{
 		$this->db->order_by('sequence', 'ASC');
 		$this->db->where('parent_id', $parent);
+		$this->db->where('website', $this->website);
 		$result = $this->db->get('pages')->result();
 		
 		$return	= array();
@@ -33,6 +39,7 @@ Class Page_model extends CI_Model
     {
 		$this->db->order_by('sequence', 'ASC');
 		$this->db->order_by('title', 'ASC');
+		$this->db->where('website', $this->website);
 		$pages = $this->db->get('pages')->result();
 		
 		$results	= array();
@@ -47,6 +54,7 @@ Class Page_model extends CI_Model
 	function get_page($id)
 	{
 		$this->db->where('id', $id);
+		$this->db->where('website', $this->website);
 		$result = $this->db->get('pages')->row();
 		
 		return $result;
@@ -71,6 +79,7 @@ Class Page_model extends CI_Model
 		}
 		else
 		{
+			$data['website'] = $this->website;
 			$this->db->insert('pages', $data);
 			return $this->db->insert_id();
 		}
@@ -87,6 +96,7 @@ Class Page_model extends CI_Model
 	function get_page_by_slug($slug)
 	{
 		$this->db->where('slug', $slug);
+		$this->db->where('website', $this->website);
 		$result = $this->db->get('pages')->row();
 		
 		return $result;

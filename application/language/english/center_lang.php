@@ -21,6 +21,7 @@ $lang['error_not_found']            = 'Không tìm thấy.';
 $lang['delete_success']             = 'Đã xóa.';
 $lang['description']				= 'Description';
 $lang['content']				    = 'Content';
+$lang['teachers']				    = 'Teachers';
 
 $lang['search_term']				= 'Search Term';
 $lang['product_form']				= 'Product Form';

@@ -199,16 +199,55 @@ Class Center_model extends CI_Model
 	function detail_invoice($invoice_number){
 		$this->db->select('invoices.id as invoice_id, invoices.invoice_number, invoices.total as invoice_total, invoices.create_date as invoice_create_date');
 		$this->db->select('student_registry.*, centers.name as center_name, courses.title as course_title, schedules.title as schedule_title, course_numbers.title as course_number_title, schedules.start_time, schedules.end_time');
-
+		$this->db->select('students.name as student_name, students.parent_name, students.phone, students.email');
 		$this->db->join('invoice_registries', 'invoice_registries.invoice_id = invoices.id');
 		$this->db->join('student_registry', 'student_registry.id = invoice_registries.student_registry_id');
 		$this->db->join('centers', 'centers.id = student_registry.center_id', 'left');
 		$this->db->join('courses', 'courses.id = student_registry.course_id', 'left');
 		$this->db->join('schedules', 'schedules.id = student_registry.schedule_id', 'left');
 		$this->db->join('course_numbers', 'course_numbers.id = student_registry.course_number_id', 'left');
+		$this->db->join('students', 'students.id = student_registry.student_id');
 		$this->db->where('student_registry.delete_flag', 0);
 		$this->db->where('invoices.invoice_number', $invoice_number);
 		return $this->db->order_by('student_registry.id', 'DESC')->get('invoices ')->result();
+	}
+
+	function get_teachers($data=array(), $condition = array())
+	{
+		if(!empty($data['rows']))
+		{
+			$this->db->limit($data['rows']);
+		}
+
+		//grab the offset
+		if(!empty($data['page']))
+		{
+			$this->db->offset($data['page']);
+		}
+		if(isset($condition['key_word'])){
+			$this->db->where('(name like "%'.$condition['key_word'].'%")');
+		}
+		return	$this->db->where('delete_flag', 0)->order_by('id', 'DESC')->get('teachers')->result();
+	}
+
+	function get_teacher($id){
+		if($id > 0){
+			$this->db->select('teachers.*, districts.name as district_name, wards.name as ward_name');
+			$this->db->join('districts', 'districts.id = teachers.district_id', 'left');
+			$this->db->join('wards', 'wards.id = teachers.ward_id', 'left');
+			return	$this->db->where('delete_flag', 0)->where('teachers.id', $id)->get('teachers')->row();
+		}
+		return null;
+	}
+
+	function insert_teacher($id = 0, $data = array()){
+		if($id){
+			$this->db->where('id', $id)->update('teachers', $data);
+		}else{
+			$this->db->insert('teachers', $data);
+			$id = $this->db->insert_id();
+		}
+		return $id;
 	}
 
 	function get_course_numbers($all = false)

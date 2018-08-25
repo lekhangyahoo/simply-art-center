@@ -6,7 +6,7 @@ function areyousure()
 </script>
 <div class="btn-group pull-right">
 	<a class="btn" href="<?php echo site_url($this->config->item('admin_folder').'/pages/form'); ?>"><i class="icon-plus-sign"></i> <?php echo lang('add_new_page');?></a>
-	<a class="btn" href="<?php echo site_url($this->config->item('admin_folder').'/pages/link_form'); ?>"><i class="icon-plus-sign"></i> <?php echo lang('add_new_link');?></a>
+	<!--<a class="btn" href="<?php echo site_url($this->config->item('admin_folder').'/pages/link_form'); ?>"><i class="icon-plus-sign"></i> <?php echo lang('add_new_link');?></a>-->
 </div>
 
 <table class="table table-striped">
