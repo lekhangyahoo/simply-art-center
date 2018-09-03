@@ -99,7 +99,6 @@ function editCenter(center_id){
 }
 
 function deleteCourse(id){
-    alert(admin_url);
     var url = admin_url + 'centers/delete_course';
     if(id > 0){
         bootbox.confirm("Do you want do delete?", function(result){
@@ -176,6 +175,31 @@ function studentCreateInvoice(type){
     return false;
 }
 
+function deleteTeacher(id){
+    var url = admin_url + 'centers/delete_teacher';
+    if(id > 0){
+        bootbox.confirm("Do you want do delete?", function(result){
+            if(result){
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        id: id
+                    }
+                }).done(function (result) {
+                    if(result.success == 1){
+                        $("#row-"+ id).remove();
+                        _alert(result.message);
+                    }else{
+                        _alert('Error');
+                    }
+
+                });
+            }
+        });
+    }
+}
 $( document ).ready(function() {
     $("#new_regis_center_id, #new_regis_course_id").change(function(){
         get_option_schedules();
